@@ -1,7 +1,6 @@
 use pathsearch::find_executable_in_path;
 #[allow(unused_imports)]
 use std::io::{self, Write};
-use std::process::exit;
 
 const BUILTINS: [&str; 3] = ["exit", "echo", "type"];
 
