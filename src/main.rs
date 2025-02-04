@@ -19,9 +19,22 @@ fn run_type(args: Vec<&str>) {
     if BUILTINS.contains(arg) {
         println!("{} is a shell builtin", arg);
     } else if let Some(exe) = find_executable_in_path(arg) {
-        println!("{} is {}",arg, exe.display());
+        println!("{} is {}", arg, exe.display());
     } else {
         println!("{} not found", arg);
+    }
+}
+
+fn run_pwd() {
+    println!("{}", std::env::current_dir().unwrap().display());
+}
+
+fn run_cd(args: Vec<&str>) {
+    let path = args.get(0).unwrap_or(&"/");
+    if path == &"~" {
+        std::env::set_current_dir(std::env::var("HOME").unwrap()).unwrap();
+    } else if let Err(_e) = std::env::set_current_dir(path) {
+        println!("cd: {}: No such file or directory", path);
     }
 }
 
@@ -48,14 +61,11 @@ fn main() {
                 continue;
             }
             Some("pwd") => {
-                println!("{}", std::env::current_dir().unwrap().display());
+                run_pwd();
                 continue;
             }
             Some("cd") => {
-                let path = args.clone().next().unwrap_or("/");
-                if let Err(_e) = std::env::set_current_dir(path) {
-                    println!("cd: {}: No such file or directory", path);
-                }
+                run_cd(args.collect());
                 continue;
             }
             _ => {
@@ -63,7 +73,11 @@ fn main() {
                     let exe_name = exe.file_name().unwrap().to_str().unwrap();
                     let status = Command::new(exe_name).args(args).status().unwrap();
                     if !status.success() {
-                        println!("{}: command failed with status {}", command.clone().next().unwrap(), status);
+                        println!(
+                            "{}: command failed with status {}",
+                            command.clone().next().unwrap(),
+                            status
+                        );
                     }
                     continue;
                 }
