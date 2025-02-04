@@ -1,6 +1,7 @@
 use pathsearch::find_executable_in_path;
 #[allow(unused_imports)]
 use std::io::{self, Write};
+use std::process::Command;
 
 const BUILTINS: [&str; 3] = ["exit", "echo", "type"];
 
@@ -46,9 +47,16 @@ fn main() {
                 run_type(args.collect());
                 continue;
             }
-            _ => {}
+            _ => {
+                if let Some(exe) = find_executable_in_path(command.clone().next().unwrap()) {
+                    let status = Command::new(exe).args(args).status().unwrap();
+                    if !status.success() {
+                        println!("{}: command failed with status {}", command.clone().next().unwrap(), status);
+                    }
+                    continue;
+                }
+            }
         }
-
         println!("{}: command not found", input.trim());
     }
 }
