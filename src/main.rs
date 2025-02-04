@@ -49,7 +49,8 @@ fn main() {
             }
             _ => {
                 if let Some(exe) = find_executable_in_path(command.clone().next().unwrap()) {
-                    let status = Command::new(exe).args(args).status().unwrap();
+                    let exe_name = exe.file_name().unwrap().to_str().unwrap();
+                    let status = Command::new(exe_name).args(args).status().unwrap();
                     if !status.success() {
                         println!("{}: command failed with status {}", command.clone().next().unwrap(), status);
                     }
