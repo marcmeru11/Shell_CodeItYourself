@@ -3,7 +3,7 @@ use pathsearch::find_executable_in_path;
 use std::io::{self, Write};
 use std::process::Command;
 
-const BUILTINS: [&str; 4] = ["exit", "echo", "type", "pwd"];
+const BUILTINS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];
 
 fn run_exit(args: Vec<&str>) {
     let code = args.get(0).map_or(0, |c| c.parse().unwrap_or(0));
@@ -49,6 +49,13 @@ fn main() {
             }
             Some("pwd") => {
                 println!("{}", std::env::current_dir().unwrap().display());
+                continue;
+            }
+            Some("cd") => {
+                let path = args.clone().next().unwrap_or("/");
+                if let Err(_e) = std::env::set_current_dir(path) {
+                    println!("cd: {}: No such file or directory", path);
+                }
                 continue;
             }
             _ => {
