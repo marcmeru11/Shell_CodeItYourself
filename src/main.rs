@@ -13,16 +13,14 @@ fn main() {
         stdin.read_line(&mut input).unwrap();
 
         let command = input.trim().split_whitespace();
+        let mut args = command.clone().skip(1);
 
         match command.clone().next() {
-            Some("exit") => exit(input.trim().split_whitespace().nth(1).unwrap_or("0").parse().unwrap()),
-            /*
+            Some("exit") => exit(args.next().unwrap_or("0").parse().unwrap()),
             Some("echo") => {
-                let args = command.skip(1);
                 println!("{}", args.collect::<Vec<&str>>().join(" "));
                 continue;
             }
-            */
             _ => {}
             
         }
