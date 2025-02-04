@@ -35,7 +35,7 @@ fn main() {
         stdin.read_line(&mut input).unwrap();
 
         let command = input.trim().split_whitespace();
-        let mut args = command.clone().skip(1);
+        let args = command.clone().skip(1);
         match command.clone().next() {
             Some("exit") => run_exit(args.collect()),
             Some("echo") => {
