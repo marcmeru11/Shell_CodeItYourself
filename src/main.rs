@@ -22,12 +22,15 @@ fn main() {
                 continue;
             }
             Some("type") => {
-                let command = args.next().unwrap();
-                match command {
-                    "exit" => println!("exit is a shell builtin"),
-                    "echo" => println!("echo is a shell builtin"),
-                    "type" => println!("type is a shell builtin"),
-                    _ => println!("{}: not found", command),
+                let arg = args.next().unwrap();
+                match arg {
+                    "exit" | "echo" | "type" => {
+                        println!("{} is a shell builtin", arg);
+                    }
+                    _ => {
+                        println!("{}: command not found", arg);
+                    }
+
                 }
                 continue;
             }
