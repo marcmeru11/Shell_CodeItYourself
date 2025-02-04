@@ -3,7 +3,7 @@ use pathsearch::find_executable_in_path;
 use std::io::{self, Write};
 use std::process::Command;
 
-const BUILTINS: [&str; 3] = ["exit", "echo", "type"];
+const BUILTINS: [&str; 4] = ["exit", "echo", "type", "pwd"];
 
 fn run_exit(args: Vec<&str>) {
     let code = args.get(0).map_or(0, |c| c.parse().unwrap_or(0));
@@ -45,6 +45,10 @@ fn main() {
             }
             Some("type") => {
                 run_type(args.collect());
+                continue;
+            }
+            Some("pwd") => {
+                println!("{}", std::env::current_dir().unwrap().display());
                 continue;
             }
             _ => {
