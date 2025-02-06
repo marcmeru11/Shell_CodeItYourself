@@ -7,9 +7,9 @@ pub fn split_command(input: &str) -> Vec<String> {
     let mut chars = input.chars().peekable();
 
     while let Some(c) = chars.next() {
-        if c == '\'' {
+        if c == '\''  && !in_double_quotes {
             in_quotes = !in_quotes;
-        } else if c == '"' {
+        } else if c == '"' &&  !in_quotes {
             in_double_quotes = !in_double_quotes;
         } else if c == ' ' && !in_quotes && !in_double_quotes {
             if !word.is_empty() {
