@@ -1,41 +1,40 @@
-use pathsearch::find_executable_in_path;
 #[allow(unused_imports)]
+use pathsearch::find_executable_in_path;
 use std::io::{self, Write};
 use std::process::Command;
 
-const BUILTINS: [&str; 5] = ["exit", "echo", "type", "pwd", "cd"];
+mod builtins;
+use builtins::{run_cd, run_echo, run_exit, run_pwd, run_type};
 
-fn run_exit(args: Vec<&str>) {
-    let code = args.get(0).map_or(0, |c| c.parse().unwrap_or(0));
-    std::process::exit(code);
-}
+// Función para dividir el input en comandos y argumentos
+pub fn split_command(input: &str) -> Vec<String> {
+    let mut result = Vec::new();
+    let mut word = String::new();
+    
+    let mut in_quotes = false;
+    let mut in_double_quotes = false;
+    let mut chars = input.chars().peekable();
 
-fn run_echo(args: Vec<&str>) {
-    println!("{}", args.join(" "));
-}
-
-fn run_type(args: Vec<&str>) {
-    let arg = args.get(0).unwrap();
-    if BUILTINS.contains(arg) {
-        println!("{} is a shell builtin", arg);
-    } else if let Some(exe) = find_executable_in_path(arg) {
-        println!("{} is {}", arg, exe.display());
-    } else {
-        println!("{} not found", arg);
+    while let Some(c) = chars.next() {
+        if c == '\'' {
+            in_quotes = !in_quotes;
+        } else if c == '"' {
+            in_double_quotes = !in_double_quotes;
+        } else if c == ' ' && !in_quotes && !in_double_quotes {
+            if !word.is_empty() {
+                result.push(word.clone()); // Guardar palabra actual
+                word.clear();
+            }
+        } else {
+            word.push(c);
+        }
     }
-}
 
-fn run_pwd() {
-    println!("{}", std::env::current_dir().unwrap().display());
-}
-
-fn run_cd(args: Vec<&str>) {
-    let path = args.get(0).unwrap_or(&"/");
-    if path == &"~" {
-        std::env::set_current_dir(std::env::var("HOME").unwrap()).unwrap();
-    } else if let Err(_e) = std::env::set_current_dir(path) {
-        println!("cd: {}: No such file or directory", path);
+    if !word.is_empty() {
+        result.push(word);
     }
+
+    result
 }
 
 fn main() {
@@ -43,46 +42,51 @@ fn main() {
         print!("$ ");
         io::stdout().flush().unwrap();
 
-        // Wait for user input
+        // Leer la entrada del usuario
         let stdin = io::stdin();
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
 
-        let command = input.trim().split_whitespace();
-        let args = command.clone().skip(1);
-        match command.clone().next() {
-            Some("exit") => run_exit(args.collect()),
-            Some("echo") => {
-                run_echo(args.collect());
+        // Separar comando y argumentos
+        let command_parts = split_command(input.trim());
+        if command_parts.is_empty() {
+            continue; // Si está vacío, pedir otro comando
+        }
+
+        let command = command_parts[0].clone(); // Clonar el primer elemento como comando
+        let args: Vec<String> = command_parts.iter().skip(1).cloned().collect(); // Clonar argumentos
+
+        match command.as_str() {
+            "exit" => run_exit(args),
+            "echo" => {
+                let args_str: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+                run_echo(args_str);
                 continue;
             }
-            Some("type") => {
-                run_type(args.collect());
+            "type" => {
+                run_type(args);
                 continue;
             }
-            Some("pwd") => {
+            "pwd" => {
                 run_pwd();
                 continue;
             }
-            Some("cd") => {
-                run_cd(args.collect());
+            "cd" => {
+                run_cd(args);
                 continue;
             }
             _ => {
-                if let Some(exe) = find_executable_in_path(command.clone().next().unwrap()) {
-                    let exe_name = exe.file_name().unwrap().to_str().unwrap();
+                if let Some(exe) = find_executable_in_path(&command) {
+                    let exe_name = exe.to_str().unwrap();
                     let status = Command::new(exe_name).args(args).status().unwrap();
                     if !status.success() {
-                        println!(
-                            "{}: command failed with status {}",
-                            command.clone().next().unwrap(),
-                            status
-                        );
+                        println!("{}: command failed with status {}", command, status);
                     }
                     continue;
+                } else {
+                    println!("{}: command not found", command);
                 }
             }
         }
-        println!("{}: command not found", input.trim());
     }
 }
