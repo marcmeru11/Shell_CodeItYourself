@@ -7,21 +7,26 @@ pub fn split_command(input: &str) -> Vec<String> {
     let mut chars = input.chars().peekable();
 
     while let Some(c) = chars.next() {
-        if c == '\\' {
-            let c = chars.next().unwrap();
-
-            word.push(c);
-        } else if c == '\'' && !in_double_quotes {
-            in_single_quotes = !in_single_quotes;
-        } else if c == '"' && !in_single_quotes {
-            in_double_quotes = !in_double_quotes;
-        } else if c == ' ' && !in_single_quotes && !in_double_quotes {
-            if !word.is_empty() {
-                result.push(word.clone()); // Guardar palabra actual
-                word.clear();
+        match c {
+            ' ' if !in_single_quotes && !in_double_quotes => {
+                if !word.is_empty() {
+                    result.push(word.clone());
+                    word.clear();
+                }
             }
-        } else {
-            word.push(c);
+            '\\' => {
+                let c = chars.next().unwrap();
+                word.push(c);
+            }
+            '\'' if !in_double_quotes => {
+                in_single_quotes = !in_single_quotes;
+            }
+            '"' if !in_single_quotes => {
+                in_double_quotes = !in_double_quotes;
+            }
+            _ => {
+                word.push(c);
+            }
         }
     }
 
