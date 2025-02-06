@@ -6,7 +6,7 @@ pub fn run_exit(args: Vec<String>) {
     std::process::exit(code);
 }
 
-pub fn run_echo(args: Vec<&str>) {
+pub fn run_echo(args: Vec<String>) {
     println!("{}", args.join(" "));
 }
 

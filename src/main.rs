@@ -6,36 +6,8 @@ use std::process::Command;
 mod builtins;
 use builtins::{run_cd, run_echo, run_exit, run_pwd, run_type};
 
-// Función para dividir el input en comandos y argumentos
-pub fn split_command(input: &str) -> Vec<String> {
-    let mut result = Vec::new();
-    let mut word = String::new();
-    
-    let mut in_quotes = false;
-    let mut in_double_quotes = false;
-    let mut chars = input.chars().peekable();
-
-    while let Some(c) = chars.next() {
-        if c == '\'' {
-            in_quotes = !in_quotes;
-        } else if c == '"' {
-            in_double_quotes = !in_double_quotes;
-        } else if c == ' ' && !in_quotes && !in_double_quotes {
-            if !word.is_empty() {
-                result.push(word.clone()); // Guardar palabra actual
-                word.clear();
-            }
-        } else {
-            word.push(c);
-        }
-    }
-
-    if !word.is_empty() {
-        result.push(word);
-    }
-
-    result
-}
+mod utils;
+use utils::split_command;
 
 fn main() {
     loop {
@@ -59,8 +31,7 @@ fn main() {
         match command.as_str() {
             "exit" => run_exit(args),
             "echo" => {
-                let args_str: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
-                run_echo(args_str);
+                run_echo(args);
                 continue;
             }
             "type" => {
@@ -77,12 +48,13 @@ fn main() {
             }
             _ => {
                 if let Some(exe) = find_executable_in_path(&command) {
-                    let exe_name = exe.to_str().unwrap();
-                    let status = Command::new(exe_name).args(args).status().unwrap();
-                    if !status.success() {
-                        println!("{}: command failed with status {}", command, status);
+                    if let Some(exe_name) = exe.file_name().and_then(|name| name.to_str()) {
+                        let status = Command::new(exe_name).args(args).status().unwrap();
+                        if !status.success() {
+                            println!("{}: command failed with status {}", command, status);
+                        }
+                        continue;
                     }
-                    continue;
                 } else {
                     println!("{}: command not found", command);
                 }

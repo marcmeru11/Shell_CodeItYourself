@@ -4,7 +4,6 @@ pub fn split_command(input: &str) -> Vec<String> {
     
     let mut in_quotes = false;
     let mut in_double_quotes = false;
-
     let mut chars = input.chars().peekable();
 
     while let Some(c) = chars.next() {
@@ -26,5 +25,5 @@ pub fn split_command(input: &str) -> Vec<String> {
         result.push(word);
     }
 
-    return result
+    result
 }
