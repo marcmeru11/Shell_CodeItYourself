@@ -24,6 +24,7 @@ pub fn split_command(input: &str) -> Vec<String> {
                     word.push(c);
                 } else {
                     word.push('\\');
+                    word.push(c);
                 }
             }
             ' ' if !in_single_quotes && !in_double_quotes => {
