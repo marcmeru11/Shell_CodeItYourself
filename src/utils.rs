@@ -16,7 +16,7 @@ pub fn split_command(input: &str) -> Vec<String> {
             }
             '\\' if !in_single_quotes && !in_double_quotes => {
                 c = chars.next().unwrap();
-                if c == '\\' || c =='$' || c=='\'' || c=='"' {
+                if c=='\\' || c =='$' || c=='\'' || c=='"' {
                     word.push(c);
                 } else {
                     word.push('\\');
@@ -25,7 +25,7 @@ pub fn split_command(input: &str) -> Vec<String> {
             }
             ' ' if !in_single_quotes && !in_double_quotes => {
                 if !word.is_empty() {
-                    result.push(word);
+                    result.push(word.clone());
                     word = String::new();
                 }
             }
