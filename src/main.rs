@@ -20,7 +20,7 @@ fn main() {
 
         let command_parts = split_command(input.trim());
         if command_parts.is_empty() {
-            continue; 
+            continue;
         }
 
         let command = command_parts[0].clone();
@@ -58,5 +58,6 @@ fn main() {
                 }
             }
         }
+        print!("{}", input);
     }
 }
