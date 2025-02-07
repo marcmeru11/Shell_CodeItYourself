@@ -1,45 +1,57 @@
-pub fn split_command(s: &str) -> Vec<String> {
-    let mut s_iter = s.trim().chars().peekable();
+pub fn split_command(input: &str) -> Vec<String> {
+    let mut iter = input.trim().chars().peekable();
 
-    let mut cur_s = String::new();
-
-    let mut ret = Vec::new();
+    let mut word = String::new();
+    let mut result = Vec::new();
 
     let mut in_single_quote = false;
-
     let mut in_double_quote = false;
 
-    while let Some(c) = s_iter.next() {
-        if c == '\'' && !in_double_quote {
-            in_single_quote = !in_single_quote;
-        } else if c == '"' && !in_single_quote {
-            in_double_quote = !in_double_quote;
-        } else if c == '\\' && !in_single_quote && !in_double_quote {
-            let c = s_iter.next().unwrap();
-
-            cur_s.push(c);
-        } else if c == '\\' && in_double_quote {
-            match s_iter.peek().unwrap() {
-                '\\' | '$' | '"' => {
-                    cur_s.push(s_iter.next().unwrap());
+    while let Some(c) = iter.next() {
+        match c {
+            '\'' => {
+                if in_single_quote {
+                    in_single_quote = false;
+                } else if !in_double_quote {
+                    in_single_quote = true;
+                } else {
+                    word.push(c);
                 }
-
-                _ => cur_s.push(c),
-            };
-        } else if c == ' ' && !in_single_quote && !in_double_quote {
-            if !cur_s.is_empty() {
-                ret.push(cur_s);
-
-                cur_s = String::new();
             }
-        } else {
-            cur_s.push(c);
+
+            '"' => {
+                if in_double_quote {
+                    in_double_quote = false;
+                } else if !in_single_quote {
+                    in_double_quote = true;
+                } else {
+                    word.push(c);
+                }
+            }
+
+            '\\' => {
+                if in_single_quote || (in_double_quote && iter.peek() == Some(&'"')) {
+                    word.push(c);
+                } else if iter.peek() == Some(&'\\') || iter.peek() == Some(&'$') {
+                    word.push(iter.next().unwrap());
+                } else {
+                    word.push(c);
+                }
+            }
+
+            ' ' => {
+                if in_single_quote || in_double_quote {
+                    word.push(c);
+                } else if !word.is_empty() {
+                    result.push(word);
+                    word = String::new();
+                }
+            }
+
+            _ => {
+                word.push(c);
+            }
         }
     }
-
-    if !cur_s.is_empty() {
-        ret.push(cur_s);
-    }
-
-    ret
+    result
 }
