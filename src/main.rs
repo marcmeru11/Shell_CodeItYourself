@@ -47,19 +47,15 @@ fn main() {
             }
             _ => {
                 if let Some(exe) = find_executable_in_path(&command) {
-                    if let Some(exe_name) = exe.file_name().and_then(|name| name.to_str()) {
-                        let status = Command::new(exe_name).args(args).status().unwrap();
-                        if !status.success() {
-                            println!("{}: command failed with status {}", command, status);
-                        }
-                        continue;
+                    let status = Command::new(exe).args(args).status().unwrap();
+                    if !status.success() {
+                        println!("{}: command failed with status {}", command, status);
                     }
                 } else {
                     println!("{}: command not found", command);
                 }
+                
             }
         }
-        std::thread::sleep(std::time::Duration::from_millis(10));
-        print!("command: {}", input);
     }
 }
