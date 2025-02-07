@@ -23,7 +23,6 @@ pub fn split_command(input: &str) -> Vec<String> {
                 if c=='\\' || c =='$' || c=='\'' || c=='"' {
                     word.push(c);
                 } else {
-                    word.push('\\');
                     word.push(c);
                 }
             }
