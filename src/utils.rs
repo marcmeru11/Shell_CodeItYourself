@@ -9,7 +9,7 @@ pub fn split_command(input: &str) -> Vec<String> {
     while let Some(c) = chars.next() {
         //Enclosing backslashes within double quotes " preserves the special meaning of the backslash, only when it is followed by \, $, " or newline.
         match c {
-            '\\' if !in_single_quotes && !in_double_quotes => {
+            '\\' => {
                 if let Some(&next_char) = chars.peek() {
                     match next_char {
                         '\\' | '$' | '"' | '\n' => {
