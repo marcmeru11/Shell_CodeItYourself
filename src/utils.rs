@@ -6,34 +6,21 @@ pub fn split_command(input: &str) -> Vec<String> {
     let mut in_double_quotes = false;
     let mut chars = input.chars().peekable();
 
-    while let Some(c) = chars.next() {
-        //Enclosing backslashes within double quotes " preserves the special meaning of the backslash, only when it is followed by \, $, " or newline.
+    while let Some(mut c) = chars.next() {
         match c {
-            '\\' => {
-                if let Some(&next_char) = chars.peek() {
-                    match next_char {
-                        '\\' | '$' | '"' | '\n' => {
-                            let c = chars.next().unwrap();
-                            word.push(c);
-                        }
-                        _ => {
-                            word.push(c);
-                        }
-                    }
-                } else {
-                    word.push(c);
-                }
-            }
             '\'' if !in_double_quotes => {
                 in_single_quotes = !in_single_quotes;
             }
             '"' if !in_single_quotes => {
                 in_double_quotes = !in_double_quotes;
             }
-            ' ' if !in_single_quotes && !in_double_quotes => {
-                if !word.is_empty() {
-                    result.push(word.clone());
-                    word.clear();
+            '\\' if !in_single_quotes && !in_double_quotes => {
+                c = chars.next().unwrap();
+                if c == '\\' || c =='$' || c=='\'' || c=='"' {
+                    word.push(c);
+                } else {
+                    word.push('\\');
+                    word.push(c);
                 }
             }
             _ => {
