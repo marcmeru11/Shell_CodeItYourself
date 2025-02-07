@@ -60,7 +60,8 @@ fn main() {
                     println!("{}: command not found", command);
                 }
             }
-        } 
+        }
+        std::thread::sleep(std::time::Duration::from_secs(1));
         print!("command: {}", input);
     }
 }
