@@ -13,10 +13,12 @@ fn main() {
     loop {
         print!("$ ");
         io::stdout().flush().unwrap();
-
+        
         let stdin = io::stdin();
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
+        
+        print!("command:{}", input);
 
         let command_parts = split_command(input.trim());
         if command_parts.is_empty() {
@@ -58,6 +60,5 @@ fn main() {
                 }
             }
         }
-        print!("{}", input);
     }
 }
