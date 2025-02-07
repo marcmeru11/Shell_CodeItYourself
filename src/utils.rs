@@ -16,6 +16,10 @@ pub fn split_command(input: &str) -> Vec<String> {
             }
             '\\' if !in_single_quotes && !in_double_quotes => {
                 c = chars.next().unwrap();
+                word.push(c);
+            }
+            '\\' if in_double_quotes => {
+                c = chars.next().unwrap();
                 if c=='\\' || c =='$' || c=='\'' || c=='"' {
                     word.push(c);
                 } else {
