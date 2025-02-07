@@ -47,14 +47,16 @@ fn main() {
             }
             _ => {
                 if let Some(exe) = find_executable_in_path(&command) {
-                    let status = Command::new(exe).args(args).status().unwrap();
-                    if !status.success() {
-                        println!("{}: command failed with status {}", command, status);
+                    if let Some(exe_name) = exe.file_name().and_then(|name| name.to_str()) {
+                        let status = Command::new(exe_name).args(args).status().unwrap();
+                        if !status.success() {
+                            println!("{}: command failed with status {}", command, status);
+                        }
+                        continue;
                     }
                 } else {
                     println!("{}: command not found", command);
                 }
-                
             }
         }
     }
