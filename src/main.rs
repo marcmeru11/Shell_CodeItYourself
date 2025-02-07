@@ -48,7 +48,6 @@ fn main() {
             _ => {
                 if let Some(exe) = find_executable_in_path(&command) {
                     let status = Command::new(exe).args(args).status().unwrap();
-                    Command::new("echo").arg(status.to_string()).status().unwrap();
                     if !status.success() {
                         println!("{}: command failed with status {}", command, status);
                     }
