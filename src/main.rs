@@ -9,8 +9,6 @@ use builtins::{run_cd, run_echo, run_exit, run_pwd, run_type};
 mod utils;
 use utils::split_command;
 
-
-
 fn main() {
     loop {
         print!("$ ");
@@ -61,7 +59,7 @@ fn main() {
                 }
             }
         }
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        std::thread::sleep(std::time::Duration::from_millis(100));
         print!("command: {}", input);
     }
 }
