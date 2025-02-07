@@ -23,6 +23,12 @@ pub fn split_command(input: &str) -> Vec<String> {
                     word.push(c);
                 }
             }
+            ' ' if !in_single_quotes && !in_double_quotes => {
+                if !word.is_empty() {
+                    result.push(word);
+                    word = String::new();
+                }
+            }
             _ => {
                 word.push(c);
             }

@@ -14,19 +14,17 @@ fn main() {
         print!("$ ");
         io::stdout().flush().unwrap();
 
-        // Leer la entrada del usuario
         let stdin = io::stdin();
         let mut input = String::new();
         stdin.read_line(&mut input).unwrap();
 
-        // Separar comando y argumentos
         let command_parts = split_command(input.trim());
         if command_parts.is_empty() {
-            continue; // Si está vacío, pedir otro comando
+            continue; 
         }
 
-        let command = command_parts[0].clone(); // Clonar el primer elemento como comando
-        let args: Vec<String> = command_parts.iter().skip(1).cloned().collect(); // Clonar argumentos
+        let command = command_parts[0].clone();
+        let args: Vec<String> = command_parts.iter().skip(1).cloned().collect();
 
         match command.as_str() {
             "exit" => run_exit(args),
