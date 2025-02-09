@@ -41,7 +41,7 @@ pub fn split_command(input: &str) -> Vec<String> {
                 continue;
             }
             _ => {
-                word.push(c);
+                word.push(c); 
             }
         }
     }
